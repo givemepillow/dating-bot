@@ -1,0 +1,32 @@
+{
+    "api": {
+        "token": "bot_token"
+    },
+    "webhook": {
+        "host": "https://example.com",
+        "path": "/"
+    },
+    "webapp": {
+        "host": "localhost",
+        "port": 3000
+    },
+    "database": {
+        "sqlite": {
+            "file": "example.db"
+        },
+        "postgres": {
+            "host": "127.0.0.1",
+            "port": "5000",
+            "name": "db_name",
+            "user": "db_user_name",
+            "password": "db_user_password"
+        },
+        "mysql": {
+            "host": "127.0.0.1",
+            "port": "5000",
+            "name": "db_name",
+            "user": "db_user_name",
+            "password": "db_user_password"
+        }
+    }
+}
