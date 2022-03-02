@@ -2,6 +2,8 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from model.Settlement import Settlement
 
+__all__ = ['SettlementSelector']
+
 
 class _SettlementSelector:
     def __init__(self, settlements: [Settlement], count: int):
@@ -10,7 +12,7 @@ class _SettlementSelector:
         self.__start: int = 0
         self.__settlements: [Settlement] = settlements
 
-    def reload_markup(self, action=None):
+    def build_markup(self, action=None):
         markup = InlineKeyboardMarkup(row_width=2)
         match action:
             case 'next':
@@ -58,4 +60,4 @@ class SettlementSelector:
 
     @classmethod
     def update_markup(cls, user_id, action=None):
-        return cls.storage[user_id].reload_markup(action)
+        return cls.storage[user_id].build_markup(action)
