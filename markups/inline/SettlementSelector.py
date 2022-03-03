@@ -27,6 +27,7 @@ class _SettlementSelector:
                 InlineKeyboardButton(text='⬅️', callback_data='prev'),
                 InlineKeyboardButton(text='➡️', callback_data='next')
             )
+        markup.add(InlineKeyboardButton(text='Назад ↩️', callback_data='back'))
         return markup
 
     def __next(self):
