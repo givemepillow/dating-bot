@@ -1,2 +1,3 @@
-from .tools import WebhookModel, PollingModel
-from .singletone import SingletonABC, Singleton
+from .PollingBotModel import PollingModel
+from .WebhookBotModel import WebhookModel
+from .Singletone import SingletonABC, Singleton
