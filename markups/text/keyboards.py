@@ -18,6 +18,11 @@ welcome_keyboard = ReplyKeyboardMarkup(
     row_width=2
 ).add(go_button, no_button)
 
+yesno_keyboard = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    row_width=2
+).add(yes_button, no_button)
+
 restart_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
     row_width=2
