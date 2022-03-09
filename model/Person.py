@@ -1,7 +1,5 @@
 from datetime import datetime
 
-from .Settlement import Settlement
-from .Gender import Gender
 from pathlib import Path
 
 
@@ -10,15 +8,16 @@ class Person:
                  user_id: int,
                  name: str,
                  date_of_birth: datetime,
-                 gender: Gender,
-                 settlement: Settlement,
-                 bio: str | None,
-                 height: str | None,
-                 enabled: bool,
-                 registration_date: datetime,
+                 gender: str,
+                 looking_for: str,
+                 settlement: id,
                  path_to_photo: str,
-                 instagram: str | None,
-                 tiktok: str | None
+                 bio: str | None = None,
+                 height: str | None = None,
+                 enabled: bool = True,
+                 registration_date: datetime = datetime.now(),
+                 instagram: str | None = None,
+                 tiktok: str | None = None
                  ):
         self.user_id = user_id
         self.tiktok = tiktok
@@ -32,3 +31,4 @@ class Person:
         self.gender = gender
         self.name = name
         self.date_of_birth = date_of_birth
+        self.looking_for = looking_for
