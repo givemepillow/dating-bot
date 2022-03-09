@@ -1,6 +1,7 @@
 import inspect
 
-from model import Person
+from loader import repository
+from model import Person, Settlement
 
 
 class Questionnaire:
@@ -15,6 +16,10 @@ class Questionnaire:
         if user_id not in cls._storage:
             cls._storage[user_id] = {'user_id': user_id}
         cls._storage[user_id] |= kwargs
+
+    @classmethod
+    def search_settlements(cls, name) -> [Settlement]:
+        return repository.get_settlements(name=name, limit=25)
 
     @classmethod
     def create_user(cls, user_id):
