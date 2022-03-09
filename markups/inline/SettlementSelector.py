@@ -7,6 +7,8 @@ from emoji.core import emojize
 
 from model import Settlement
 
+__all__ = ['SettlementSelector']
+
 
 @dataclass(frozen=True)
 class _Actions:
@@ -91,6 +93,3 @@ class SettlementSelector:
     @classmethod
     def markup(cls, user_id, callback_data=None):
         return cls._storage[user_id].build_markup(callback_data)
-
-
-__all__ = ['SettlementSelector']

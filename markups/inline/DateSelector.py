@@ -5,10 +5,10 @@ from datetime import datetime, timedelta
 import loguru
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-__all__ = ['DateSelector']
-
 from aiogram.utils.callback_data import CallbackData
 from emoji.core import emojize
+
+__all__ = ['DateSelector']
 
 
 @dataclass(frozen=True)
