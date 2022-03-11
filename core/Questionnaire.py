@@ -8,6 +8,10 @@ class Questionnaire:
     _storage = {int: {}}
 
     @classmethod
+    def get(cls, user_id, value):
+        return cls._storage[user_id][value]
+
+    @classmethod
     def write(cls, user_id, **kwargs):
         args = set(kwargs)
         awaited_args = set(inspect.getfullargspec(Person.__init__).args)
