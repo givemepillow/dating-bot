@@ -11,7 +11,7 @@ class Person:
                  gender: str,
                  looking_for: str,
                  settlement_id: int,
-                 path_to_photo: str,
+                 photo: str,
                  bio: str | None = None,
                  height: str | None = None,
                  enabled: bool = True,
@@ -22,10 +22,7 @@ class Person:
         self.user_id = user_id
         self.tiktok = tiktok
         self.instagram = instagram
-        if Path(path_to_photo).exists():
-            self.path_to_photo = path_to_photo
-        else:
-            raise FileNotFoundError("Path to photo don't exists.")
+        self.photo = photo
         self.registration_date = registration_date
         self.height = height
         self.enabled = enabled
