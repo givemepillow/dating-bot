@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import loguru
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
-from emoji.core import emojize
+from aiogram.utils.emoji import emojize
 
 from model import Settlement
 
@@ -40,15 +40,15 @@ class _SettlementSelector:
         if len(self.__settlements) > self.__count:
             markup.add(
                 InlineKeyboardButton(
-                    text=emojize(':arrow_left:', use_aliases=True),
+                    text=emojize(':arrow_left:'),
                     callback_data=self._data.new(_Actions.prev, 0)
                 ),
                 InlineKeyboardButton(
-                    text=emojize(':arrow_right:', use_aliases=True),
+                    text=emojize(':arrow_right:'),
                     callback_data=self._data.new(_Actions.next, 0)
                 )
             )
-        markup.add(InlineKeyboardButton(text=emojize('Назад :leftwards_arrow_with_hook:', use_aliases=True),
+        markup.add(InlineKeyboardButton(text=emojize('Назад :leftwards_arrow_with_hook:'),
                                         callback_data=self._data.new(_Actions.back, 0)))
         return markup
 

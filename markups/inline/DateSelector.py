@@ -6,7 +6,7 @@ import loguru
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from aiogram.utils.callback_data import CallbackData
-from emoji.core import emojize
+from aiogram.utils.emoji import emojize
 
 __all__ = ['DateSelector']
 
@@ -79,19 +79,19 @@ class _DateSelector:
 
     def _build_year(self, markup):
         markup.add(
-            InlineKeyboardButton(emojize(':rewind:', use_aliases=True), callback_data=self._data.new(
+            InlineKeyboardButton(emojize(':rewind:'), callback_data=self._data.new(
                 _Actions.prev_5_year, self._year, self._month, 0
             )),
-            InlineKeyboardButton(emojize(':arrow_backward:', use_aliases=True), callback_data=self._data.new(
+            InlineKeyboardButton(emojize(':arrow_backward:'), callback_data=self._data.new(
                 _Actions.prev_year, self._year, self._month, 0
             )),
 
             InlineKeyboardButton(str(self._year), callback_data='_'),
 
-            InlineKeyboardButton(emojize(':arrow_forward:', use_aliases=True), callback_data=self._data.new(
+            InlineKeyboardButton(emojize(':arrow_forward:'), callback_data=self._data.new(
                 _Actions.next_year, self._year, self._month, 0
             )),
-            InlineKeyboardButton(emojize(':fast_forward:', use_aliases=True), callback_data=self._data.new(
+            InlineKeyboardButton(emojize(':fast_forward:'), callback_data=self._data.new(
                 _Actions.next_5_year, self._year, self._month, 0
             ))
         )
@@ -99,20 +99,14 @@ class _DateSelector:
 
     def _build_month(self, markup):
         markup.add(
-            InlineKeyboardButton(emojize(':rewind:', use_aliases=True), callback_data=self._data.new(
-                _Actions.prev_3_month, self._year, self._month, 0
-            )),
-            InlineKeyboardButton(emojize(':arrow_backward:', use_aliases=True), callback_data=self._data.new(
+            InlineKeyboardButton(emojize(':arrow_backward:'), callback_data=self._data.new(
                 _Actions.prev_month, self._year, self._month, 0
             )),
 
             InlineKeyboardButton(str(calendar.month_name[self._month]), callback_data='_'),
 
-            InlineKeyboardButton(emojize(':arrow_forward:', use_aliases=True), callback_data=self._data.new(
+            InlineKeyboardButton(emojize(':arrow_forward:'), callback_data=self._data.new(
                 _Actions.next_month, self._year, self._month, 0
-            )),
-            InlineKeyboardButton(emojize(':fast_forward:', use_aliases=True), callback_data=self._data.new(
-                _Actions.next_3_month, self._year, self._month, 0
             ))
         )
         return markup
@@ -144,8 +138,7 @@ class _DateSelector:
                 emojize(
                     f':grey_exclamation: '
                     f'Подтвердить {self._selected_day:02d}.{self._selected_month:02d}.{self._selected_year} '
-                    f':grey_question:',
-                    use_aliases=True
+                    f':grey_question:'
                 ),
                 callback_data=self._data.new(
                     _Actions.confirm, self._selected_year, self._selected_month, self._selected_day
@@ -157,7 +150,7 @@ class _DateSelector:
 
     def _mark_day(self, day):
         if self._year == self._selected_year and self._month == self._selected_month:
-            return day if day != self._selected_day else emojize(':white_check_mark:', use_aliases=True)
+            return day if day != self._selected_day else emojize(':white_check_mark:')
         else:
             return day
 
