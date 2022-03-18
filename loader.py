@@ -21,7 +21,7 @@ parser.add_argument("--mode", "-m", nargs=1,
 
 args = parser.parse_args()
 
-db_engine = database_engine(drop=False, echo=False)
+db_engine = database_engine(drop=True, create=True, echo=False, data_source='settlements.csv')
 Session = sessionmaker(bind=db_engine)
 session = Session()
 

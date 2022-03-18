@@ -18,7 +18,8 @@ def database_engine(
         encoding='utf-8',
         drop=True,
         connect=True,
-        create=True
+        create=True,
+        data_source=None
 ):
     db_engine = create_engine(
         f"postgresql+psycopg2://{username}:{password}@{host}/{database}",
@@ -32,17 +33,19 @@ def database_engine(
 
     if drop:
         metadata.drop_all(db_engine)
-        with open('settlements.csv', 'r') as f:
-            reader = csv.DictReader(f)
-            with db_engine.connect() as connection:
-                connection.execute(
-                    insert(Settlement),
-                    [
-                        {'name': row['settlement'], 'region': row['region'], 'population': int(row['population'])}
-                        for row in reader
-                    ]
-                )
+
     if create:
         metadata.create_all(db_engine)
+        if data_source:
+            with open(data_source, 'r') as f:
+                reader = csv.DictReader(f)
+                with db_engine.connect() as connection:
+                    connection.execute(
+                        insert(Settlement),
+                        [
+                            {'name': row['settlement'], 'region': row['region'], 'population': int(row['population'])}
+                            for row in reader
+                        ]
+                    )
 
     return db_engine
