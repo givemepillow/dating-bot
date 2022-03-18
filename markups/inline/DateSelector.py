@@ -156,7 +156,7 @@ class _DateSelector:
 
 
 class DateSelector:
-    _storage: {int: _DateSelector} = dict()
+    _storage: dict[int, _DateSelector] = dict()
     data = CallbackData('calendar', 'action', 'year', 'month', 'day')
     actions = _Actions()
 

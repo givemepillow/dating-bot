@@ -2,6 +2,7 @@ import abc
 
 from sqlalchemy import text, desc
 from sqlalchemy.sql.elements import or_
+from sqlalchemy.sql.operators import ilike_op
 
 from utils import SingletonABC
 import model
@@ -17,7 +18,7 @@ class AbstractRepository(SingletonABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_settlements(self, name) -> [model.Settlement]:
+    def get_settlements(self, name) -> list[model.Settlement]:
         raise NotImplementedError
 
 
@@ -31,11 +32,11 @@ class SqlAlchemyRepository(AbstractRepository):
     def get_person(self, user_id):
         return self.session.query(model.Person).filter_by(id=user_id).one()
 
-    def get_settlements(self, name, limit=25) -> [model.Settlement]:
+    def get_settlements(self, name, limit=25) -> list[model.Settlement]:
         return self.session.query(model.Settlement).where(
             or_(
-                text(f"name ilike '{name.text}%' "),
-                text(f"name ilike '%-{name.text}%' "),
-                text(f"name ilike '% {name.text}%' "),
+                ilike_op(model.Settlement.name, f'{name.text}%'),
+                ilike_op(model.Settlement.name, f'%-{name.text}%'),
+                ilike_op(model.Settlement.name, f'% {name.text}%')
             )
         ).order_by(desc(model.Settlement.population)).limit(limit).all()
