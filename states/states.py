@@ -11,3 +11,4 @@ class QState(StatesGroup):
     select_date = State()
     get_photo = State()
     finish = State()
+    select_height = State()
