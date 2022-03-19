@@ -19,11 +19,11 @@ class _Actions:
 
 
 class _SettlementSelector:
-    def __init__(self, settlements: [Settlement], count: int, callback_data: CallbackData):
+    def __init__(self, settlements: list[Settlement], count: int, callback_data: CallbackData):
         self.__count: int = count
         self.__end: int = count
         self.__start: int = 0
-        self.__settlements: [Settlement] = settlements
+        self.__settlements: list[Settlement] = settlements
         self._data = callback_data
 
     def build_markup(self, callback_data):
@@ -71,12 +71,12 @@ class _SettlementSelector:
 
 
 class SettlementSelector:
-    _storage: {str: _SettlementSelector} = dict()
+    _storage: dict[str, _SettlementSelector] = dict()
     data = CallbackData('settlements', 'action', 'settlement_id')
     actions = _Actions()
 
     @classmethod
-    def setup(cls, settlements: [Settlement], user_id: int, count: int = 5):
+    def setup(cls, settlements: list[Settlement], user_id: int, count: int = 5):
         cls._storage[user_id] = _SettlementSelector(
             settlements=settlements,
             count=count,
