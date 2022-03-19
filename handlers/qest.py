@@ -10,6 +10,7 @@ from markups.inline import LookingForSelector, GenderSelector, SettlementSelecto
 from markups.text import cancel_keyboard, welcome_keyboard, yesno_keyboard
 from states import QState
 from toolkit import MessageBox, age_suffix
+from markups.inline import HeightSelector
 
 
 @dp.message_handler(text='Отмена', state='*')
@@ -202,18 +203,39 @@ async def get_photo(message: Message):
     _photo = message.photo[-1].file_id
     Questionnaire.write(user_id=_user_id, photo=_photo)
     await message.answer(f"Отлично смотришься, {Questionnaire.get(_user_id, 'name')}.")
-    await message.answer("Показать твою анкету?", reply_markup=yesno_keyboard)
-    await QState.finish.set()  # Update state.
+    await message.answer(text = 'Введите свой рост')
+    await QState.select_height.set()  # Update state.
 
 
-@dp.message_handler(text='Да', state=QState.finish.state)
-async def finish(message: Message):
-    _user_id = message.from_user.id
-    _photo = Questionnaire.get(_user_id, 'photo')
-    _age, _suffix = age_suffix(Questionnaire.get(_user_id, 'date_of_birth'))
-    _name = Questionnaire.get(_user_id, 'name')
-    _settlement = Questionnaire.get(_user_id, 'settlement_id')
-    await message.answer_photo(
-        photo=_photo,
-        caption=f"{_name}, {_settlement} - {_age} {_suffix}."
-    )
+# @dp.message_handler(text='Да', state=QState.finish.state)
+# async def finish(message: Message):
+#     _user_id = message.from_user.id
+#     _photo = Questionnaire.get(_user_id, 'photo')
+#     _age, _suffix = age_suffix(Questionnaire.get(_user_id, 'date_of_birth'))
+#     _name = Questionnaire.get(_user_id, 'name')
+#     _settlement = Questionnaire.get(_user_id, 'settlement_id')
+#     await message.answer_photo(
+#         photo=_photo,
+#         caption=f"{_name}, {_settlement} - {_age} {_suffix}."
+#     )
+    
+
+
+@dp.message_handler(state = QState.select_height)
+async def height_selection(message: Message):
+    _height = message.text
+    if not _height.isdigit():
+        await message.answer(text = 'У нас рост измеряется в целых положительных числах!')
+        await message.answer(text = 'Введите свой рост:')
+    elif not 0 < int(_height) < 300:
+        await message.answer(text = 'Введите свой настоящий рост')
+    else:
+        HeightSelector.setup(message.from_user.id)
+        await message.answer(text = emojize(':straight_ruler: А теперь выбери предпочтительный рост партнёра'), reply_markup=HeightSelector.markup(message.from_user.id))
+
+
+@dp.callback_query_handler(HeightSelector.data.filter(), state = QState.select_height)
+async def height_cd(callback_query, callback_data):
+
+        await callback_query.message.edit_reply_markup(HeightSelector.markup(callback_query.from_user.id, callback_data))
+        
