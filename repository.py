@@ -1,6 +1,6 @@
 import abc
 
-from sqlalchemy import text, desc
+from sqlalchemy import desc
 from sqlalchemy.sql.elements import or_
 from sqlalchemy.sql.operators import ilike_op
 
@@ -23,20 +23,22 @@ class AbstractRepository(SingletonABC):
 
 
 class SqlAlchemyRepository(AbstractRepository):
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, Session):
+        self.session = Session()
 
     def add_person(self, person):
-        self.session.add(person)
+        with self.session as s:
+            s.add(person)
 
     def get_person(self, user_id):
         return self.session.query(model.Person).filter_by(id=user_id).one()
 
     def get_settlements(self, name, limit=25) -> list[model.Settlement]:
-        return self.session.query(model.Settlement).where(
-            or_(
-                ilike_op(model.Settlement.name, f'{name.text}%'),
-                ilike_op(model.Settlement.name, f'%-{name.text}%'),
-                ilike_op(model.Settlement.name, f'% {name.text}%')
-            )
-        ).order_by(desc(model.Settlement.population)).limit(limit).all()
+        with self.session as s:
+            return s.query(model.Settlement).where(
+                or_(
+                    ilike_op(model.Settlement.name, f'{name.text}%'),
+                    ilike_op(model.Settlement.name, f'%-{name.text}%'),
+                    ilike_op(model.Settlement.name, f'% {name.text}%')
+                )
+            ).order_by(desc(model.Settlement.population)).limit(limit).all()
