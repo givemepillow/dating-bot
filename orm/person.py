@@ -30,6 +30,8 @@ persons_table = Table(
     Column('height', Integer, nullable=True),
     Column('instagram', String(50), nullable=True),
     Column('tiktok', String(50), nullable=True),
+    Column('from_height', Integer, nullable=True),
+    Column('to_height', Integer, nullable=True),
 
     Index('person_settlement_id_index', 'settlement_id'),
     Index('person_date_of_birth_index', 'date_of_birth'),
