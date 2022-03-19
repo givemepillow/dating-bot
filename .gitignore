@@ -133,3 +133,6 @@ dmypy.json
 
 # project config
 project.json
+
+# data files
+*.csv
