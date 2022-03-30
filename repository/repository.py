@@ -42,3 +42,7 @@ class SqlAlchemyRepository(AbstractRepository):
                     ilike_op(model.Settlement.name, f'% {name.text}%')
                 )
             ).order_by(desc(model.Settlement.population)).limit(limit).all()
+
+
+class Repository(SqlAlchemyRepository):
+    pass

@@ -3,8 +3,8 @@ import locale
 from sqlalchemy.orm import sessionmaker
 
 from utils import WebhookModel, PollingModel
-from orm import create_database_engine
-from repository import SqlAlchemyRepository
+from repository.orm import create_database_engine
+from repository import Repository
 
 import argparse
 
@@ -29,9 +29,11 @@ db_engine = create_database_engine(
     data_source='settlements.csv'
 )
 
-Session = sessionmaker(bind=db_engine)
-
-repository = SqlAlchemyRepository(Session=Session)
+repository = Repository(
+    Session=sessionmaker(
+        bind=db_engine
+    )
+)
 
 bot_engine = WebhookModel() if args.mode[0] == 'webhook' else PollingModel()
 memory_storage = bot_engine.get_storage()
