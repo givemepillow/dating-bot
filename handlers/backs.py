@@ -1,8 +1,9 @@
 from aiogram.types import Message
+from aiogram.utils.emoji import emojize
 
 from core import Questionnaire
 from loader import dp
-from markups.inline import GenderSelector, LookingForSelector, DateSelector
+from markups.inline import GenderSelector, LookingForSelector, DateSelector, HeightSelector
 from markups.text import *
 from states import QState
 from toolkit import MessageBox
@@ -50,3 +51,29 @@ async def to_select_date(message: Message):
     )
     MessageBox.put(message=_message, user_id=_user_id)
     await QState.select_date.set()  # Update state.
+
+
+@dp.message_handler(text=['Назад'], state=QState.select_height)
+async def to_select_photo(message: Message):
+    _user_id = message.from_user.id
+    await MessageBox.delete_last(_user_id)
+    await message.answer(f'Пришли нам свою фотографию:')
+    await QState.get_photo.set()  # Update state.
+
+
+@dp.message_handler(text=['Назад'], state=QState.select_partner_height)
+async def to_select_height(message: Message):
+    _user_id = message.from_user.id
+    await MessageBox.delete_last(_user_id)
+    await message.answer(text='Введите свой рост:')
+    await QState.select_height.set()  # Update state.
+
+
+@dp.message_handler(text=['Назад'], state=QState.bio)
+async def to_select_height(message: Message):
+    _user_id = message.from_user.id
+    await MessageBox.delete_last(_user_id)
+    HeightSelector.setup(message.from_user.id)
+    await message.answer(text=emojize(':straight_ruler: А теперь выбери предпочтительный рост партнёра'),
+                         reply_markup=HeightSelector.markup(message.from_user.id))
+    await QState.select_partner_height.set()  # Update state.

@@ -6,12 +6,10 @@ from aiogram.utils.emoji import emojize
 
 from core import Questionnaire
 from loader import dp
-from markups.inline import LookingForSelector, GenderSelector, SettlementSelector, DateSelector
+from markups.inline import *
 from markups.text import *
 from states import QState
 from toolkit import MessageBox, age_suffix, Filter
-from markups.inline import HeightSelector
-
 
 
 @dp.message_handler(commands=['cancel'], state=QState.states)
@@ -27,14 +25,14 @@ async def cancel(message: Message):
 @dp.message_handler(commands=['start'], state='*')
 async def welcome(message: Message):
     text = "Добро пожаловать! Ну что начнём?"
-    await QState.first()
+    await QState.start.set()
     await message.answer(text=text, reply_markup=welcome_keyboard)
 
 
 @dp.message_handler(text=['Нет'], state=QState.start)
 async def start(message: Message):
     await message.answer("Ладно... Если передумаешь, то просто напиши - /start", reply_markup=ReplyKeyboardRemove())
-    await QState.finish()  # Update state.
+    await QState.first()  # Update state.
 
 
 @dp.message_handler(text=['Назад'], state=QState.select_gender)
@@ -212,67 +210,60 @@ async def get_photo(message: Message):
     _photo = message.photo[-1].file_id
     Questionnaire.write(user_id=_user_id, photo=_photo)
     await message.answer(f"Отлично смотришься, {Questionnaire.get(_user_id, 'name')}.")
-    await message.answer(text = 'Введите свой рост')
+    await message.answer(text='Введите свой рост:')
     await QState.select_height.set()  # Update state.
 
 
-# @dp.message_handler(text='Да', state=QState.finish.state)
-# async def finish(message: Message):
-#     _user_id = message.from_user.id
-#     _photo = Questionnaire.get(_user_id, 'photo')
-#     _age, _suffix = age_suffix(Questionnaire.get(_user_id, 'date_of_birth'))
-#     _name = Questionnaire.get(_user_id, 'name')
-#     _settlement = Questionnaire.get(_user_id, 'settlement_id')
-#     await message.answer_photo(
-#         photo=_photo,
-#         caption=f"{_name}, {_settlement} - {_age} {_suffix}."
-#     )
-
-
-
-@dp.message_handler(state = QState.select_height)
+@dp.message_handler(state=QState.select_height)
 async def height_selection(message: Message):
     _user_id = message.from_user.id
     _height = message.text
     if not _height.isdigit():
-        await message.answer(text = 'У нас рост измеряется в целых положительных числах!')
-        await message.answer(text = 'Введите свой рост:')
+        await message.answer(text='У нас рост измеряется в целых положительных числах!')
+        await message.answer(text='Введите свой рост:')
     elif not 0 < int(_height) < 300:
-        await message.answer(text = 'Введите свой настоящий рост')
+        await message.answer(text='Введите свой настоящий рост')
     else:
         HeightSelector.setup(message.from_user.id)
-        await message.answer(text = emojize(':straight_ruler: А теперь выбери предпочтительный рост партнёра'), reply_markup=HeightSelector.markup(message.from_user.id))
+        _message = await message.answer(text=emojize(':straight_ruler: А теперь выбери предпочтительный рост партнёра'),
+                                        reply_markup=HeightSelector.markup(message.from_user.id))
+        MessageBox.put(user_id=_user_id, message=_message)
+        await QState.select_partner_height.set()  # Update state.
     Questionnaire.write(user_id=_user_id, height=_height)
 
 
-@dp.callback_query_handler(HeightSelector.data.filter(), state = QState.select_height)
+@dp.callback_query_handler(HeightSelector.data.filter(), state=QState.select_partner_height)
 async def height_cd(callback_query, callback_data):
     _user_id = callback_query.from_user.id
-    _from=HeightSelector.from_height()
-    _to=HeightSelector.to_height()
+    _from = HeightSelector.from_height()
+    _to = HeightSelector.to_height()
     if callback_data['action'] == 'check_mark':
         Questionnaire.write(user_id=_user_id, from_height=_from)
         Questionnaire.write(user_id=_user_id, to_height=_to)
         await MessageBox.delete_last(user_id=_user_id)
         HeightSelector.clear(user_id=_user_id)
         await QState.bio.set()
-        await callback_query.message.answer(text = 'Напиши что-нибудь о себе, но не очень много!')
+        await callback_query.message.answer(
+            text='Напиши что-нибудь о себе, но не забывай, что краткость - сестра таланта!'
+        )
     else:
-        _message =  await callback_query.message.edit_reply_markup(HeightSelector.markup(callback_query.from_user.id, callback_data))
+        _message = await callback_query.message.edit_reply_markup(
+            HeightSelector.markup(callback_query.from_user.id, callback_data))
         MessageBox.put(message=_message, user_id=_user_id)
 
 
-@dp.message_handler(state = QState.bio)
+@dp.message_handler(state=QState.bio)
 async def bio(message: Message):
     _user_id = message.from_user.id
     _bio = message.text.lower()
     _bad_word = Filter.check(_bio)
     if len(_bio) > 500:
-        await message.answer(text = 'Весьма занимательно, попробуйте написать о себе поменьше :)')
-    elif _bad_word != None:
-        await message.answer(text = f'Ваше описание содержит нецензурную брань похожую на: "{_bad_word}". Давайте обойдёмся без него :)')
+        await message.answer(text='Весьма занимательно, попробуйте написать о себе в более сжатом виде :)')
+    elif _bad_word is not None:
+        await message.answer(
+            text=f'Ваше описание содержит нецензурную лексику: "{_bad_word}". Давайте обойдёмся без нехороших слов :)')
     else:
-        await message.answer(text = 'Отлично!')
+        await message.answer(text='Отлично!')
         Questionnaire.write(user_id=_user_id, bio=_bio)
 
-    #await message.answer(text = f'{Questionnaire._storage[_user_id]}')
+    # await message.answer(text = f'{Questionnaire._storage[_user_id]}')
