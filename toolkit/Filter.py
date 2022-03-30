@@ -1,9 +1,8 @@
 from toolkit.replacement import repl
 
-class Filter():
 
+class Filter():
     with open('bad_words.txt', 'r', encoding='utf-8') as file:
-        print('фагпращвшп')
         bad_words = list(map(str.rstrip, file.readlines()))
 
     def __init__(self, bio):
@@ -19,7 +18,7 @@ class Filter():
                         bio = bio.replace(phr, key)
 
     @classmethod
-    def _distance(self, a, b): 
+    def _distance(self, a, b):
         "Calculates the Levenshtein distance between a and b."
         n, m = len(a), len(b)
         if n > m:
@@ -42,8 +41,6 @@ class Filter():
         self._replace(text)
         for part in range(len(text)):
             for word in self.bad_words:
-                fragment = text[part: part+len(word)]
-                if self._distance(fragment, word) <= len(word)*0.25:
+                fragment = text[part: part + len(word)]
+                if self._distance(fragment, word) <= len(word) * 0.25:
                     return word
-
-
