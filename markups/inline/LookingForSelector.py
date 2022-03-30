@@ -11,7 +11,5 @@ class LookingForSelector:
             InlineKeyboardButton(text=emojize('Парня :person_with_blond_hair:'),
                                  callback_data='male'),
             InlineKeyboardButton(text=emojize('Неважно :v:'),
-                                 callback_data='no_matter'),
-            InlineKeyboardButton(text=emojize('Назад :leftwards_arrow_with_hook:'),
-                                 callback_data='back')
+                                 callback_data='no_matter')
         )
