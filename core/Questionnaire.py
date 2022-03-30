@@ -22,7 +22,7 @@ class Questionnaire:
         cls._storage[user_id] |= kwargs
 
     @classmethod
-    def search_settlements(cls, name) -> [Settlement]:
+    def search_settlements(cls, name) -> list[Settlement]:
         return repository.get_settlements(name=name, limit=25)
 
     @classmethod

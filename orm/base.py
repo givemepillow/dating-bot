@@ -1,6 +1,6 @@
 import csv
 
-from sqlalchemy import create_engine, insert, inspect
+from sqlalchemy import create_engine, insert, select, func
 from model import Settlement
 from .mapper import run_mapper
 from .metadata import metadata
@@ -41,16 +41,19 @@ def create_database_engine(
 
     if create:
         metadata.create_all(db_engine)
-        if data_source and not inspect(db_engine).has_table("settlements"):
-            with open(data_source, 'r') as f:
-                reader = csv.DictReader(f)
-                with db_engine.connect() as connection:
-                    connection.execute(
-                        insert(Settlement),
-                        [
-                            {'name': row['settlement'], 'region': row['region'], 'population': int(row['population'])}
-                            for row in reader
-                        ]
-                    )
+        if data_source:
+            with db_engine.connect() as connection:
+                if connection.execute(select(func.count()).select_from(Settlement)).fetchone()[0] == 0:
+                    with open(data_source, 'r', encoding='utf-8') as f:
+                        reader = csv.DictReader(f)
+                        connection.execute(
+                            insert(Settlement),
+                            [
+                                {'name': row['settlement'], 'region': row['region'], 'population': int(row['population'])}
+                                for row in reader
+                            ]
+                        )
+                
+                
 
     return db_engine

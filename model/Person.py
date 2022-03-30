@@ -17,7 +17,9 @@ class Person:
                  enabled: bool = True,
                  registration_date: date = date.today(),
                  instagram: str | None = None,
-                 tiktok: str | None = None
+                 tiktok: str | None = None,
+                 from_height: int = 0,
+                 to_height: int = 250
                  ):
         self.user_id = user_id
         self.tiktok = tiktok
@@ -30,6 +32,8 @@ class Person:
         self.settlement_id = settlement_id
         self.gender = gender
         self.name = name
+        self.from_height = from_height
+        self.to_height = to_height
         if isinstance(date_of_birth, date):
             self.date_of_birth = date_of_birth
         else:

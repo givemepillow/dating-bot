@@ -7,8 +7,8 @@ from loader import bot
 
 
 class MessageBox:
-    _storage: {int: [Message]} = dict()
-    _messages: {int: {int}} = dict()
+    _storage: dict[int: [Message]] = dict()
+    _messages: dict[int, int] = dict()
 
     @classmethod
     def put(cls, message: Message, user_id: int):

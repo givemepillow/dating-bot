@@ -10,4 +10,5 @@ class QState(StatesGroup):
     select_settlement = State()
     select_date = State()
     get_photo = State()
-    finish = State()
+    select_height = State()
+    bio = State()
