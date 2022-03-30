@@ -9,8 +9,9 @@ from loader import dp
 from markups.inline import LookingForSelector, GenderSelector, SettlementSelector, DateSelector
 from markups.text import cancel_keyboard, welcome_keyboard, yesno_keyboard
 from states import QState
-from toolkit import MessageBox, age_suffix
+from toolkit import MessageBox, age_suffix, Filter
 from markups.inline import HeightSelector
+
 
 
 @dp.message_handler(text='Отмена', state='*')
@@ -53,7 +54,6 @@ async def name(message: Message):
         )
         MessageBox.put(user_id=message.from_user.id, message=_message)
         await QState.select_gender.set()  # Update state.
-
 
 @dp.callback_query_handler(state=QState.select_gender.state)
 async def gender(callback_query: CallbackQuery):
@@ -223,6 +223,7 @@ async def get_photo(message: Message):
 
 @dp.message_handler(state = QState.select_height)
 async def height_selection(message: Message):
+    _user_id = message.from_user.id
     _height = message.text
     if not _height.isdigit():
         await message.answer(text = 'У нас рост измеряется в целых положительных числах!')
@@ -232,10 +233,38 @@ async def height_selection(message: Message):
     else:
         HeightSelector.setup(message.from_user.id)
         await message.answer(text = emojize(':straight_ruler: А теперь выбери предпочтительный рост партнёра'), reply_markup=HeightSelector.markup(message.from_user.id))
+    Questionnaire.write(user_id=_user_id, height=_height)
 
 
 @dp.callback_query_handler(HeightSelector.data.filter(), state = QState.select_height)
 async def height_cd(callback_query, callback_data):
+    _user_id = callback_query.from_user.id
+    _from=HeightSelector.from_height()
+    _to=HeightSelector.to_height()
+    if callback_data['action'] == 'check_mark':
+        Questionnaire.write(user_id=_user_id, from_height=_from)
+        Questionnaire.write(user_id=_user_id, to_height=_to)
+        await MessageBox.delete_last(user_id=_user_id)
+        HeightSelector.clear(user_id=_user_id)
+        await QState.bio.set()
+        await callback_query.message.answer(text = 'Напиши что-нибудь о себе, но не очень много!')
+    else:
+        _message =  await callback_query.message.edit_reply_markup(HeightSelector.markup(callback_query.from_user.id, callback_data))
+        MessageBox.put(message=_message, user_id=_user_id)
 
-        await callback_query.message.edit_reply_markup(HeightSelector.markup(callback_query.from_user.id, callback_data))
+
+@dp.message_handler(state = QState.bio)
+async def bio(message: Message):
+    _user_id = message.from_user.id
+    _bio = message.text.lower()
+    _bad_word = Filter.check(_bio)
+    if len(_bio) > 500:
+        await message.answer(text = 'Весьма занимательно, попробуйте написать о себе поменьше :)')
+    elif _bad_word != None:
+        await message.answer(text = f'Ваше описание содержит нецензурную брань похожую на: "{_bad_word}". Давайте обойдёмся без него :)')
+    else:
+        await message.answer(text = 'Отлично!')
+        Questionnaire.write(user_id=_user_id, bio=_bio)
+
+    #await message.answer(text = f'{Questionnaire._storage[_user_id]}')
         
