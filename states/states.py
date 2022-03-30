@@ -2,6 +2,7 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 
 
 class QState(StatesGroup):
+    zero = State()
     start = State()
     input_name = State()
     select_gender = State()
