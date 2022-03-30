@@ -11,4 +11,5 @@ class QState(StatesGroup):
     select_date = State()
     get_photo = State()
     select_height = State()
+    select_partner_height = State()
     bio = State()
