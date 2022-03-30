@@ -137,3 +137,4 @@ project.json
 # data files
 *.csv
 *.db
+*.txt
