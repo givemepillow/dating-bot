@@ -8,6 +8,7 @@ class _Actions:
     down_from = 'down_from'
     up_to = 'up_to'
     down_to = 'down_to'
+    check_mark = 'check_mark'
 
 class _HeightSelector:
     _start = 0 
@@ -32,7 +33,7 @@ class _HeightSelector:
             InlineKeyboardButton(text = emojize(':arrow_up:'), callback_data=self._data.new(_Actions.up_from)),
             InlineKeyboardButton(text = emojize(':arrow_down:'), callback_data=self._data.new(_Actions.down_to)),
             InlineKeyboardButton(text = emojize(':arrow_up:'), callback_data='_' if self._end == 300 else self._data.new(_Actions.up_to)),
-            InlineKeyboardButton(text=emojize('Назад :leftwards_arrow_with_hook:'), callback_data='back')
+            InlineKeyboardButton(text=emojize('Подтвердить :white_check_mark:'), callback_data=self._data.new(_Actions.check_mark))
         )
         return markup
 
@@ -68,3 +69,10 @@ class HeightSelector:
             del cls._storage[user_id]
         except KeyError as err:
             loguru.logger.warning(str(err))
+    @classmethod
+    def from_height(cls):
+        return _HeightSelector._start
+
+    @classmethod
+    def to_height(cls):
+        return _HeightSelector._end
