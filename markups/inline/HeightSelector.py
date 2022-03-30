@@ -3,6 +3,7 @@ from aiogram.utils.callback_data import CallbackData
 import loguru
 from aiogram.utils.emoji import emojize
 
+
 class _Actions:
     up_from = 'up_from'
     down_from = 'down_from'
@@ -10,8 +11,9 @@ class _Actions:
     down_to = 'down_to'
     check_mark = 'check_mark'
 
+
 class _HeightSelector:
-    _start = 0 
+    _start = 0
     _end = 300
 
     def __init__(self, callback_data: CallbackData):
@@ -21,19 +23,22 @@ class _HeightSelector:
         self._callback_data_handler(callback_data)
         markup = InlineKeyboardMarkup(row_width=4)
         markup.add(
-            InlineKeyboardButton(text = 'От', callback_data='_'),
-            InlineKeyboardButton(text = 'До', callback_data='_')
-            )
-        markup.add(
-            InlineKeyboardButton(text = 'неважно' if self._start == 0 else self._start, callback_data='_'),
-            InlineKeyboardButton(text = 'неважно' if self._end == 300 else self._end, callback_data='_')
+            InlineKeyboardButton(text='От', callback_data='_'),
+            InlineKeyboardButton(text='До', callback_data='_')
         )
         markup.add(
-            InlineKeyboardButton(text = emojize(':arrow_down:'), callback_data='_' if self._start == 0 else self._data.new(_Actions.down_from)),
-            InlineKeyboardButton(text = emojize(':arrow_up:'), callback_data=self._data.new(_Actions.up_from)),
-            InlineKeyboardButton(text = emojize(':arrow_down:'), callback_data=self._data.new(_Actions.down_to)),
-            InlineKeyboardButton(text = emojize(':arrow_up:'), callback_data='_' if self._end == 300 else self._data.new(_Actions.up_to)),
-            InlineKeyboardButton(text=emojize('Подтвердить :white_check_mark:'), callback_data=self._data.new(_Actions.check_mark))
+            InlineKeyboardButton(text='неважно' if self._start == 0 else self._start, callback_data='_'),
+            InlineKeyboardButton(text='неважно' if self._end == 300 else self._end, callback_data='_')
+        )
+        markup.add(
+            InlineKeyboardButton(text=emojize(':arrow_down:'),
+                                 callback_data='_' if self._start == 0 else self._data.new(_Actions.down_from)),
+            InlineKeyboardButton(text=emojize(':arrow_up:'), callback_data=self._data.new(_Actions.up_from)),
+            InlineKeyboardButton(text=emojize(':arrow_down:'), callback_data=self._data.new(_Actions.down_to)),
+            InlineKeyboardButton(text=emojize(':arrow_up:'),
+                                 callback_data='_' if self._end == 300 else self._data.new(_Actions.up_to)),
+            InlineKeyboardButton(text=emojize('Подтвердить :white_check_mark:'),
+                                 callback_data=self._data.new(_Actions.check_mark))
         )
         return markup
 
@@ -52,6 +57,15 @@ class _HeightSelector:
             case _Actions.down_to:
                 self._end -= 5
 
+    @property
+    def start(self):
+        return self._start
+
+    @property
+    def end(self):
+        return self._end
+
+
 class HeightSelector:
     _storage: dict[str, _HeightSelector] = dict()
     data = CallbackData('height', 'action')
@@ -60,19 +74,22 @@ class HeightSelector:
     @classmethod
     def setup(cls, user_id):
         cls._storage[user_id] = _HeightSelector(callback_data=cls.data)
+
     @classmethod
     def markup(cls, user_id, callback_data=None):
         return cls._storage[user_id].build_markup(callback_data=callback_data)
+
     @classmethod
     def clear(cls, user_id):
         try:
             del cls._storage[user_id]
         except KeyError as err:
             loguru.logger.warning(str(err))
-    @classmethod
-    def from_height(cls):
-        return _HeightSelector._start
 
     @classmethod
-    def to_height(cls):
-        return _HeightSelector._end
+    def from_height(cls, user_id):
+        return cls._storage[user_id].start
+
+    @classmethod
+    def to_height(cls, user_id):
+        return cls._storage[user_id].end

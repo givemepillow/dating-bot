@@ -235,11 +235,9 @@ async def height_selection(message: Message):
 @dp.callback_query_handler(HeightSelector.data.filter(), state=QState.select_partner_height)
 async def height_cd(callback_query, callback_data):
     _user_id = callback_query.from_user.id
-    _from = HeightSelector.from_height()
-    _to = HeightSelector.to_height()
     if callback_data['action'] == 'check_mark':
-        Questionnaire.write(user_id=_user_id, from_height=_from)
-        Questionnaire.write(user_id=_user_id, to_height=_to)
+        Questionnaire.write(user_id=_user_id, from_height=HeightSelector.from_height(_user_id))
+        Questionnaire.write(user_id=_user_id, to_height=HeightSelector.to_height(_user_id))
         await MessageBox.delete_last(user_id=_user_id)
         HeightSelector.clear(user_id=_user_id)
         await QState.bio.set()
@@ -263,7 +261,8 @@ async def bio(message: Message):
         await message.answer(
             text=f'Ваше описание содержит нецензурную лексику: "{_bad_word}". Давайте обойдёмся без нехороших слов :)')
     else:
-        await message.answer(text='Отлично!')
         Questionnaire.write(user_id=_user_id, bio=_bio)
+        await message.answer(text=f"Отлично!")
+        print(Questionnaire.create_user(_user_id))
 
     # await message.answer(text = f'{Questionnaire._storage[_user_id]}')
