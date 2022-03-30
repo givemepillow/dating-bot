@@ -17,6 +17,6 @@ def suffix(_age: date):
     return 'года'
 
 
-def age_suffix(start_date: date) -> (int, str):
+def age_suffix(start_date: date):
     _age = age(start_date)
     return _age, suffix(_age)
