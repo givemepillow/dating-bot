@@ -1,18 +1,18 @@
 from datetime import date
 
 from aiogram import types
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 from aiogram.utils.emoji import emojize
 
 from core import Questionnaire
 from loader import dp
 from markups.inline import LookingForSelector, GenderSelector, SettlementSelector, DateSelector
-from markups.text import cancel_keyboard, welcome_keyboard, yesno_keyboard
+from markups.text import *
 from states import QState
 from toolkit import MessageBox, age_suffix
 
 
-@dp.message_handler(text='Отмена', state='*')
+@dp.message_handler(commands=['cancel'], state=QState.states)
 async def cancel(message: Message):
     text = "Ну вот... всё потеряно... Попробовать ещё раз?"
     _user_id = message.from_user.id
@@ -21,6 +21,7 @@ async def cancel(message: Message):
     await message.answer(text=text, reply_markup=yesno_keyboard)
 
 
+@dp.message_handler(text=['Назад'], state=QState.input_name)
 @dp.message_handler(commands=['start'], state='*')
 async def welcome(message: Message):
     text = "Добро пожаловать! Ну что начнём?"
@@ -28,13 +29,20 @@ async def welcome(message: Message):
     await message.answer(text=text, reply_markup=welcome_keyboard)
 
 
-@dp.message_handler(text=['Начнём', 'Да'], state=QState.start.state)
+@dp.message_handler(text=['Нет'], state=QState.start)
 async def start(message: Message):
-    await message.answer("Давай знакомится, как тебя зовут: ", reply_markup=cancel_keyboard)
+    await message.answer("Ладно... Если передумаешь, то просто напиши - /start", reply_markup=ReplyKeyboardRemove())
+    await QState.finish()  # Update state.
+
+
+@dp.message_handler(text=['Назад'], state=QState.select_gender)
+@dp.message_handler(text=['Начнём', 'Да'], state=QState.start)
+async def start(message: Message):
+    await message.answer("Давай знакомится, как тебя зовут: ", reply_markup=back_keyboard)
     await QState.input_name.set()  # Update state.
 
 
-@dp.message_handler(state=QState.input_name.state)
+@dp.message_handler(state=QState.input_name)
 async def name(message: Message):
     _name = message.text.capitalize()
     if not (20 > len(_name) > 1):
@@ -54,7 +62,7 @@ async def name(message: Message):
         await QState.select_gender.set()  # Update state.
 
 
-@dp.callback_query_handler(state=QState.select_gender.state)
+@dp.callback_query_handler(state=QState.select_gender)
 async def gender(callback_query: CallbackQuery):
     _user_id = callback_query.from_user.id
     await MessageBox.delete_last(user_id=_user_id)
@@ -68,7 +76,7 @@ async def gender(callback_query: CallbackQuery):
         await QState.previous()  # Update state.
 
 
-@dp.callback_query_handler(state=QState.select_looking_for.state)
+@dp.callback_query_handler(state=QState.select_looking_for)
 async def looking_for(callback_query: CallbackQuery):
     _user_id = callback_query.from_user.id
     await MessageBox.delete_last(user_id=_user_id)
@@ -86,7 +94,7 @@ async def looking_for(callback_query: CallbackQuery):
         await QState.previous()  # Update state.
 
 
-@dp.message_handler(state=QState.search_settlement.state)
+@dp.message_handler(state=QState.search_settlement)
 async def search(message):
     await types.ChatActions.typing()
     await QState.select_settlement.set()
@@ -204,16 +212,3 @@ async def get_photo(message: Message):
     await message.answer(f"Отлично смотришься, {Questionnaire.get(_user_id, 'name')}.")
     await message.answer("Показать твою анкету?", reply_markup=yesno_keyboard)
     await QState.finish.set()  # Update state.
-
-
-@dp.message_handler(text='Да', state=QState.finish.state)
-async def finish(message: Message):
-    _user_id = message.from_user.id
-    _photo = Questionnaire.get(_user_id, 'photo')
-    _age, _suffix = age_suffix(Questionnaire.get(_user_id, 'date_of_birth'))
-    _name = Questionnaire.get(_user_id, 'name')
-    _settlement = Questionnaire.get(_user_id, 'settlement_id')
-    await message.answer_photo(
-        photo=_photo,
-        caption=f"{_name}, {_settlement} - {_age} {_suffix}."
-    )
