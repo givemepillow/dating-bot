@@ -28,8 +28,6 @@ persons_table = Table(
     Column('bio', String(300), nullable=True),
     Column('photo', String(100), nullable=False),
     Column('height', Integer, nullable=True),
-    Column('instagram', String(50), nullable=True),
-    Column('tiktok', String(50), nullable=True),
     Column('from_height', Integer, nullable=True),
     Column('to_height', Integer, nullable=True),
 
