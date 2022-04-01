@@ -8,7 +8,7 @@ from loader import bot
 
 class MessageBox:
     _storage: dict[int: [Message]] = dict()
-    _messages: dict[int, int] = dict()
+    _messages: dict[int: {int}] = dict()
 
     @classmethod
     def put(cls, message: Message, user_id: int):
@@ -35,3 +35,12 @@ class MessageBox:
                 if user_id in cls._messages:
                     cls._messages[user_id].discard(_message.message_id)
                 await bot.delete_message(chat_id=user_id, message_id=_message.message_id)
+
+    @classmethod
+    async def replace_last(cls, user_id: int, message: Message):
+        """
+        Deleting last message at the user's stack and put
+        on new message.
+        """
+        await cls.delete_last(user_id=user_id)
+        cls.put(message=message, user_id=user_id)
