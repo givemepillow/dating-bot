@@ -14,3 +14,4 @@ class QState(StatesGroup):
     select_height = State()
     select_partner_height = State()
     bio = State()
+    complete = State()
