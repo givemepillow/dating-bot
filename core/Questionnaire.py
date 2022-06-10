@@ -1,4 +1,5 @@
 import inspect
+from types import SimpleNamespace
 
 from loader import repository
 from model import Person, Settlement
@@ -27,6 +28,12 @@ class Questionnaire:
 
     @classmethod
     def create_user(cls, user_id):
-        # person = Person(**cls._storage[user_id])
-        # repository.add_person(person)
-        ...
+        person = Person(**cls._storage[user_id])
+        repository.add_person(person)
+        return person
+
+    @classmethod
+    def questionnaire(cls, user_id) -> Person:
+        p = SimpleNamespace(**cls._storage[user_id])
+        p.settlement = repository.get_settlement(p.settlement_id).name
+        return p
