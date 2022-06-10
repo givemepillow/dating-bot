@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 from aiogram.utils.emoji import emojize
 
 from core import Questionnaire
-from loader import dp
+from loader import dp, bot
 from markups.inline import *
 from markups.text import *
 from states import QState
@@ -262,7 +262,12 @@ async def bio(message: Message):
             text=f'Ваше описание содержит нецензурную лексику: "{_bad_word}". Давайте обойдёмся без нехороших слов :)')
     else:
         Questionnaire.write(user_id=_user_id, bio=_bio)
-        await message.answer(text=f"Отлично!")
-        print(Questionnaire.create_user(_user_id))
-
-    # await message.answer(text = f'{Questionnaire._storage[_user_id]}')
+        Questionnaire.create_user(_user_id)
+        person = Questionnaire.questionnaire(_user_id)
+        await message.answer(text=f"Отлично!\n"
+                                  f"Вот твоя анкета:")
+        _age, _suffix = age_suffix(person.date_of_birth)
+        await bot.send_photo(photo=person.photo, chat_id=_user_id,
+                             caption=f"{person.name}, {person.settlement} - {_age} {_suffix}\n"
+                                     f"\n {person.bio}")
+        await QState.complete.set()
