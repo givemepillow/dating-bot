@@ -27,11 +27,14 @@ class SqlAlchemyRepository(AbstractRepository):
         self.session = Session()
 
     def add_person(self, person):
-        with self.session as s:
-            s.add(person)
+        self.session.add(person)
+        self.session.commit()
 
     def get_person(self, user_id):
         return self.session.query(model.Person).filter_by(id=user_id).one()
+
+    def get_settlement(self, settlement_id):
+        return self.session.query(model.Settlement).filter_by(id=settlement_id).one()
 
     def get_settlements(self, name, limit=25) -> list[model.Settlement]:
         with self.session as s:
