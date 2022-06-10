@@ -3,10 +3,9 @@ from aiogram.utils.emoji import emojize
 
 from core import Questionnaire
 from loader import dp
-from markups.inline import GenderSelector, LookingForSelector, DateSelector, HeightSelector
-from markups.text import *
-from states import QState
-from toolkit import MessageBox
+from core.markups.inline import GenderSelector, LookingForSelector, DateSelector, HeightSelector
+from core.states import QState
+from core.tools import MessageBox
 
 
 @dp.message_handler(text=['Назад'], state=QState.select_looking_for)

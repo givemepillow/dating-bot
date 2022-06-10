@@ -6,10 +6,10 @@ from aiogram.utils.emoji import emojize
 
 from core import Questionnaire
 from loader import dp, bot
-from markups.inline import *
-from markups.text import *
-from states import QState
-from toolkit import MessageBox, age_suffix, Filter
+from core.markups.inline import *
+from core.markups.text import *
+from core.states import QState
+from core.tools import MessageBox, age_suffix, Filter
 
 
 @dp.message_handler(commands=['cancel'], state=QState.states)

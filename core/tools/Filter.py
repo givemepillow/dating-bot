@@ -1,4 +1,4 @@
-from toolkit.replacement import repl
+from .replacement import repl
 
 
 class Filter:

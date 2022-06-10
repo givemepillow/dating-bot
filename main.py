@@ -1,6 +1,6 @@
 import loguru
 
-from handlers import dp as dispatcher
+from core.handlers import dp as dispatcher
 from loader import bot_engine
 
 if __name__ == '__main__':
