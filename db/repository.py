@@ -1,28 +1,12 @@
-import abc
-
 from sqlalchemy import desc
 from sqlalchemy.sql.elements import or_
 from sqlalchemy.sql.operators import ilike_op
 
-from utils import SingletonABC
-import model
+from utils import Singleton
+from db import model
 
 
-class AbstractRepository(SingletonABC):
-    @abc.abstractmethod
-    def add_person(self, person: model.Person):
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_person(self, user_id) -> model.Person:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_settlements(self, name) -> list[model.Settlement]:
-        raise NotImplementedError
-
-
-class SqlAlchemyRepository(AbstractRepository):
+class SqlAlchemyRepository(Singleton):
     def __init__(self, Session):
         self.session = Session()
 

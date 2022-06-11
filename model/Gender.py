@@ -1,2 +1,0 @@
-class Gender:
-    name: str

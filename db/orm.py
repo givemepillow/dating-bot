@@ -1,9 +1,7 @@
 import csv
 
 from sqlalchemy import create_engine, insert, select, func
-from model import Settlement
-from .mapper import run_mapper
-from .metadata import metadata
+from .model import Base, Settlement, Gender
 
 
 def create_database_engine(
@@ -34,13 +32,11 @@ def create_database_engine(
     if connect:
         db_engine.connect()
 
-    run_mapper()
-
     if drop:
-        metadata.drop_all(db_engine)
+        Base.metadata.drop_all(db_engine)
 
     if create:
-        metadata.create_all(db_engine)
+        Base.metadata.create_all(db_engine)
         if data_source:
             with db_engine.connect() as connection:
                 if connection.execute(select(func.count()).select_from(Settlement)).fetchone()[0] == 0:
@@ -49,11 +45,18 @@ def create_database_engine(
                         connection.execute(
                             insert(Settlement),
                             [
-                                {'name': row['settlement'], 'region': row['region'], 'population': int(row['population'])}
+                                {'name': row['settlement'], 'region': row['region'],
+                                 'population': int(row['population'])}
                                 for row in reader
                             ]
                         )
-                
-                
+                if connection.execute(select(func.count()).select_from(Gender)).fetchone()[0] == 0:
+                    connection.execute(
+                        insert(Gender),
+                        [
+                            {'name': 'male'},
+                            {'name': 'female'}
+                        ]
+                    )
 
     return db_engine

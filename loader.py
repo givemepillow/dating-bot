@@ -3,8 +3,8 @@ import locale
 from sqlalchemy.orm import sessionmaker
 
 from utils import WebhookModel, PollingModel
-from repository.orm import create_database_engine
-from repository import Repository
+from db.orm import create_database_engine
+from db import Repository
 
 import argparse
 

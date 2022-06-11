@@ -2,7 +2,7 @@ import inspect
 from types import SimpleNamespace
 
 from loader import repository
-from model import Person, Settlement
+from db.model import Person, Settlement
 
 
 class Questionnaire:

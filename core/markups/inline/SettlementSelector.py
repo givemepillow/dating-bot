@@ -5,7 +5,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 from aiogram.utils.emoji import emojize
 
-from model import Settlement
+from db.model import Settlement
 
 __all__ = ['SettlementSelector']
 
