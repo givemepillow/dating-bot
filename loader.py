@@ -23,9 +23,9 @@ args = parser.parse_args()
 
 db_engine = create_database_engine(
     database_engine='sqlite',
-    drop=True,
+    drop=False,
     create=True,
-    echo=True,
+    echo=False,
     data_source='data/settlements.csv'
 )
 
