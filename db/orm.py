@@ -26,7 +26,7 @@ def create_database_engine(
                 echo=echo, pool_size=pool_size, max_overflow=max_overflow, encoding=encoding
             )
         case 'sqlite' | 'sqlite3' | _:
-            _db = f"sqlite:///{database}.db" if '.' not in database_engine else f"sqlite:///{database}"
+            _db = f"sqlite:///data/{database}.db" if '.' not in database_engine else f"sqlite:///data/{database}"
             db_engine = create_engine(_db, echo=echo, encoding=encoding)
 
     if connect:

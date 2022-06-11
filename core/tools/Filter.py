@@ -2,7 +2,7 @@ from .replacement import repl
 
 
 class Filter:
-    with open('bad_words.txt', 'r', encoding='utf-8') as file:
+    with open('data/bad_words.txt', 'r', encoding='utf-8') as file:
         bad_words = list(map(str.rstrip, file.readlines()))
 
     def __init__(self, bio):

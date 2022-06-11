@@ -23,10 +23,10 @@ args = parser.parse_args()
 
 db_engine = create_database_engine(
     database_engine='sqlite',
-    drop=False,
+    drop=True,
     create=True,
-    echo=False,
-    data_source='settlements.csv'
+    echo=True,
+    data_source='data/settlements.csv'
 )
 
 repository = Repository(sessionmaker(
