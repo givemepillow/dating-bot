@@ -14,10 +14,6 @@ class Questionnaire:
 
     @classmethod
     def write(cls, user_id, **kwargs):
-        args = set(kwargs)
-        awaited_args = set(inspect.getfullargspec(Person.__init__).args)
-        if not args <= awaited_args:
-            raise KeyError(f"Incorrect parameters: {', '.join(args - awaited_args)}.")
         if user_id not in cls._storage:
             cls._storage[user_id] = {'user_id': user_id}
         cls._storage[user_id] |= kwargs
@@ -28,12 +24,5 @@ class Questionnaire:
 
     @classmethod
     def create_user(cls, user_id):
-        person = Person(**cls._storage[user_id])
-        repository.add_person(person)
-        return person
-
-    @classmethod
-    def questionnaire(cls, user_id) -> Person:
-        p = SimpleNamespace(**cls._storage[user_id])
-        p.settlement = repository.get_settlement(p.settlement_id).name
-        return p
+        repository.add_person(Person(**cls._storage[user_id]))
+        return repository.get_person(user_id=user_id)

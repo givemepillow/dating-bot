@@ -54,6 +54,7 @@ async def name(message: Message):
     else:
         _user_id = message.from_user.id
         Questionnaire.write(user_id=_user_id, name=_name)
+        Questionnaire.write(user_id=_user_id, enabled=True)
         _message = await message.answer(
             f"Приятно познакомиться, {_name}! Выбери свой пол:",
             reply_markup=GenderSelector.markup()
@@ -262,12 +263,11 @@ async def bio(message: Message):
             text=f'Ваше описание содержит нецензурную лексику: "{_bad_word}". Давайте обойдёмся без нехороших слов :)')
     else:
         Questionnaire.write(user_id=_user_id, bio=_bio)
-        Questionnaire.create_user(_user_id)
-        person = Questionnaire.questionnaire(_user_id)
+        person = Questionnaire.create_user(_user_id)
         await message.answer(text=f"Отлично!\n"
                                   f"Вот твоя анкета:")
         _age, _suffix = age_suffix(person.date_of_birth)
         await bot.send_photo(photo=person.photo, chat_id=_user_id,
-                             caption=f"{person.name}, {person.settlement} - {_age} {_suffix}\n"
+                             caption=f"{person.name}, {person.settlement.name} - {_age} {_suffix}\n"
                                      f"\n {person.bio}")
         await QState.complete.set()
