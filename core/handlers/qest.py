@@ -9,7 +9,8 @@ from loader import dp, bot
 from core.markups.inline import *
 from core.markups.text import *
 from core.states import QState
-from core.tools import MessageBox, age_suffix, Filter
+from core.tools import age_suffix, Filter
+from core.services import MessageBox
 
 
 @dp.message_handler(commands=['cancel'], state=QState.states)

@@ -1,6 +1,3 @@
-import inspect
-from types import SimpleNamespace
-
 from loader import repository
 from db.model import Person, Settlement
 
