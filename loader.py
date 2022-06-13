@@ -10,7 +10,7 @@ from db.repository import Repository
 
 import argparse
 
-__all__ = ['dp', 'bot_engine', 'bot', 'repository']
+__all__ = ['dp', 'bot_engine', 'bot', 'repository', 'config']
 
 file = open('project.json', "r")
 config = json.loads(file.read(), object_hook=lambda data: SimpleNamespace(**data))
