@@ -5,7 +5,7 @@ from core import Questionnaire
 from loader import dp
 from core.markups.inline import GenderSelector, LookingForSelector, DateSelector, HeightSelector
 from core.states import QState
-from core.tools import MessageBox
+from core.services import MessageBox
 
 
 @dp.message_handler(text=['Назад'], state=QState.select_looking_for)
