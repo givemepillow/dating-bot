@@ -8,7 +8,7 @@ from core import Questionnaire
 from loader import dp, bot
 from core.markups.inline import *
 from core.markups.text import *
-from core.states import QState
+from core.states import QState, FState
 from core.tools import age_suffix, Filter
 from core.services import MessageBox
 
@@ -25,7 +25,7 @@ async def cancel(message: Message):
 @dp.message_handler(text=['Назад'], state=QState.input_name)
 @dp.message_handler(commands=['start'], state='*')
 async def welcome(message: Message):
-    text = "Добро пожаловать! Ну что начнём?"
+    text = "Добро пожаловать! Ну что, начнём?"
     await QState.start.set()
     await message.answer(text=text, reply_markup=welcome_keyboard)
 
@@ -37,15 +37,15 @@ async def start(message: Message):
 
 
 @dp.message_handler(text=['Назад'], state=QState.select_gender)
-@dp.message_handler(text=['Начнём', 'Да'], state=QState.start)
+@dp.message_handler(text=['Начнём', 'Да'], state=[QState.start, QState.complete])
 async def start(message: Message):
-    await message.answer("Давай знакомится, как тебя зовут: ", reply_markup=back_keyboard)
+    await message.answer("Давай знакомиться, как тебя зовут: ", reply_markup=back_keyboard)
     await QState.input_name.set()  # Update state.
 
 
 @dp.message_handler(state=QState.input_name)
 async def name(message: Message):
-    _name = message.text.capitalize()
+    _name = ' '.join(map(str.capitalize, message.text.split()))
     if not (20 > len(_name) > 1):
         await message.answer("Длина имени должна быть от 2 до 20 символов.")
         await message.answer("Введите ваше имя:")
@@ -271,4 +271,14 @@ async def bio(message: Message):
         await bot.send_photo(photo=person.photo, chat_id=_user_id,
                              caption=f"{person.name}, {person.settlement.name} - {_age} {_suffix}\n"
                                      f"\n {person.bio}")
+        await message.answer(text="Хочешь поменять что-то?",
+                             reply_markup=after_complete_keyboard)
         await QState.complete.set()
+
+
+@dp.message_handler(text=['Нет, приступить к поиску', 'Нет'], state=QState.complete)
+async def complete(message: Message):
+    await FState.looking.set()
+    await message.answer(text='Приступаем к поиску анкет...', reply_markup=rate_keyboard)
+    await message.answer(text='Анкета',
+                         reply_markup=QuestionnaireOptionsSelector.markup())
