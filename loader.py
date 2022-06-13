@@ -1,4 +1,6 @@
+import json
 import locale
+from types import SimpleNamespace
 
 from sqlalchemy.orm import sessionmaker
 
@@ -9,6 +11,10 @@ from db.repository import Repository
 import argparse
 
 __all__ = ['dp', 'bot_engine', 'bot', 'repository']
+
+file = open('project.json', "r")
+config = json.loads(file.read(), object_hook=lambda data: SimpleNamespace(**data))
+file.close()
 
 locale.setlocale(locale.LC_ALL, 'ru_RU.UTF-8')
 
