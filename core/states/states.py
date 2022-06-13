@@ -15,3 +15,8 @@ class QState(StatesGroup):
     select_partner_height = State()
     bio = State()
     complete = State()
+
+
+class FState(StatesGroup):
+    looking = State()
+    reporting = State()
