@@ -5,7 +5,12 @@ from .buttons import (
     no_button,
     go_button,
     yes_button,
-    cancel_button
+    cancel_button,
+    like_button,
+    write_button,
+    dislike_button,
+    sleep_button,
+    no_look_button
 )
 
 back_keyboard = ReplyKeyboardMarkup(
@@ -32,3 +37,17 @@ cancel_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
     row_width=1
 ).add(cancel_button)
+
+rate_keyboard = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    row_width=4
+).add(like_button,
+      write_button,
+      dislike_button,
+      sleep_button
+      )
+
+after_complete_keyboard = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    row_width=2
+).add(yes_button, no_look_button)
