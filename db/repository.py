@@ -62,13 +62,17 @@ class Repository(Singleton):
             ).order_by(desc(Settlement.population)).limit(limit).all()
 
     def get_feed(self, person: Person, after_date: dt = dt(datetime.MINYEAR, 1, 1)) -> int:
-        stmt = select(Person.user_id).where(and_(
-            Person.settlement_id == person.settlement_id,
-            Person.user_id != person.user_id,
-            Person.registration_date > after_date
-        )).where(or_(
-            Person.gender == person.looking_for,
+        stmt = select(Person.user_id).where(
             and_(
+                Person.settlement_id == person.settlement_id,
+                Person.user_id != person.user_id,
+                Person.registration_date > after_date
+            )
+        ).where(or_(
+            and_(
+                Person.gender == person.looking_for,
+                Person.looking_for == person.gender
+            ), and_(
                 Person.looking_for is None,
                 or_(
                     person.looking_for is None,
