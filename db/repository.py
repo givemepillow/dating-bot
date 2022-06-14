@@ -61,7 +61,7 @@ class Repository(Singleton):
                 )
             ).order_by(desc(Settlement.population)).limit(limit).all()
 
-    def get_feed(self, person: Person, after_date: dt = dt(datetime.MINYEAR, 1, 1)) -> int:
+    def get_feed(self, person: Person, after_date: dt = dt(datetime.MINYEAR, 1, 1)) -> list[int]:
         stmt = select(Person.user_id).where(
             and_(
                 Person.settlement_id == person.settlement_id,
