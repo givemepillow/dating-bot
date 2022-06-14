@@ -1,5 +1,6 @@
 import datetime
 from datetime import date, datetime as dt
+from random import shuffle
 
 from db.model import Person
 from loader import repository
@@ -27,11 +28,11 @@ class _Feed:
         if person_ids:
             person = repository.get_person(person_ids[0])
             self._last_date = person.registration_date
-        return person_ids
+        return shuffle(person_ids)
 
     @property
     def _new_feed_users(self) -> [int]:
-        return repository.get_feed(repository.get_person(self._user_id), self._last_date)
+        return shuffle(repository.get_feed(repository.get_person(self._user_id), self._last_date))
 
     @property
     def user_id(self):
