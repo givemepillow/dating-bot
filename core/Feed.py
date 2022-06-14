@@ -10,9 +10,9 @@ class _Feed:
     _index: int = 0
     _cycle: int = 5
     _user_id: int
-    _prev_user_id: int
-    _current_user_id: int
-    _last_date: date = dt(datetime.MINYEAR, 1, 1)
+    _prev_user_id: int | None
+    _current_user_id: int | None
+    _last_date: date | None = dt(datetime.MINYEAR, 1, 1)
     _feed_users: [int]
 
     def __init__(self, user_id):
@@ -28,22 +28,28 @@ class _Feed:
         if person_ids:
             person = repository.get_person(person_ids[0])
             self._last_date = person.registration_date
-        return shuffle(person_ids)
+        shuffle(person_ids)
+        return person_ids
 
     @property
     def _new_feed_users(self) -> [int]:
-        return shuffle(repository.get_feed(repository.get_person(self._user_id), self._last_date))
+        new_users = repository.get_feed(
+            repository.get_person(self._user_id),
+            self._last_date if self._last_date else dt(datetime.MINYEAR, 1, 1)
+        )
+        shuffle(new_users)
+        return new_users
 
     @property
-    def user_id(self):
+    def user_id(self) -> int:
         return self._user_id
 
     @property
-    def prev_id(self):
+    def prev_id(self) -> int | None:
         return self._prev_user_id
 
     @property
-    def current_id(self):
+    def current_id(self) -> int | None:
         return self._current_user_id
 
     @property
