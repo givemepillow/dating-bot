@@ -1,28 +1,37 @@
-from datetime import date
+import datetime
+from datetime import date, datetime as dt
 
 from db.model import Person
 from loader import repository
 
 
 class _Feed:
+    _index: int = 0
+    _cycle: int = 5
     _user_id: int
     _prev_user_id: int
     _current_user_id: int
-    _last_date: date
+    _last_date: date = dt(datetime.MINYEAR, 1, 1)
     _feed_users: [int]
 
     def __init__(self, user_id):
         self._user_id = user_id
-        self._load_feed_users(user_id)
+        self._current_user_id = None
+        self._prev_user_id = None
+        self._last_date = None
+        self._feed_users = self._load_feed_users
 
-    def _load_feed_users(self, user_id):
-        self._feed_users = repository.get_feed(repository.get_person(user_id))
+    @property
+    def _load_feed_users(self) -> [int]:
+        person_ids = repository.get_feed(repository.get_person(self._user_id))
+        if person_ids:
+            person = repository.get_person(person_ids[0])
+            self._last_date = person.registration_date
+        return person_ids
 
-    def _update_feed_users(self):
-        if self._feed_users:
-            self._feed_users += repository.get_feed(repository.get_person(self._user_id), self._last_date)
-        else:
-            self._load_feed_users(self._user_id)
+    @property
+    def _new_feed_users(self) -> [int]:
+        return repository.get_feed(repository.get_person(self._user_id), self._last_date)
 
     @property
     def user_id(self):
@@ -42,15 +51,19 @@ class _Feed:
 
     @property
     def next(self) -> Person | None:
+        self._index = (self._index + 1) % self._cycle
+        if not self._index:
+            self._feed_users += self._new_feed_users
         try:
-            if not len(self._feed_users):
-                self._load_feed_users(self._user_id)
-            result = repository.get_person(self._feed_users.pop())
-            if not result:
-                self._update_feed_users()
-                result = repository.get_person(self._feed_users.pop())
-            return result
+            if not self._feed_users:
+                self._feed_users = self._load_feed_users
+            person = repository.get_person(self._feed_users.pop())
+            if not person:
+                return self.next
+            self._prev_user_id, self._current_user_id = self._current_user_id, person.user_id
+            return person
         except IndexError:
+            self._prev_user_id, self._current_user_id = self._current_user_id, None
             return None
 
 
