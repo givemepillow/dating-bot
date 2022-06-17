@@ -28,7 +28,7 @@ parser.add_argument("--mode", "-m", nargs=1,
 args = parser.parse_args()
 
 db_engine = create_database_engine(
-    database_engine='sqlite',
+    database_engine='postgres',
     drop=False,
     create=True,
     echo=False,
