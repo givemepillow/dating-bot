@@ -14,6 +14,7 @@ class _Feed:
     _current_user_id: int | None
     _last_date: date | None = dt(datetime.MINYEAR, 1, 1)
     _feed_users: [int]
+    _user_likes: [int]
 
     def __init__(self, user_id):
         self._user_id = user_id
@@ -21,6 +22,7 @@ class _Feed:
         self._prev_user_id = None
         self._last_date = None
         self._feed_users = self._load_feed_users
+        self._user_likes = list()
 
     @property
     def _load_feed_users(self) -> [int]:
@@ -39,6 +41,12 @@ class _Feed:
         )
         shuffle(new_users)
         return new_users
+
+    def get_like(self) -> int:
+        return self._user_likes.pop()
+
+    def set_like(self, user_id: int):
+        self._user_likes.append(user_id)
 
     @property
     def user_id(self) -> int:
