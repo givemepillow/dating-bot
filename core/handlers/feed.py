@@ -1,5 +1,7 @@
+import loguru
 from aiogram.types import CallbackQuery, Message
 from aiogram.types import InlineKeyboardMarkup
+from aiogram.utils.exceptions import MessageNotModified
 
 from core import Feed
 from core.markups.text import *
@@ -9,7 +11,7 @@ from loader import dp, bot, config, repository
 from .templates import send_quest, send_like, send_quest_if_person
 
 
-@dp.callback_query_handler(state=FState.states)
+@dp.callback_query_handler(state='*')
 async def options(callback_query: CallbackQuery):
     _user_id = callback_query.from_user.id
     if callback_query.data == 'report':
@@ -23,7 +25,6 @@ async def options(callback_query: CallbackQuery):
         else:
             await bot.send_message(text=emojize('Это первая анкета, предыдущей еще нет:upside_down_face:'),
                                    chat_id=_user_id)
-
     if callback_query.data == 'like':
         like_user_id = Feed(callback_query.from_user.id).get_like()
         if like_user_id:
@@ -74,7 +75,8 @@ async def looking_like(message: Message):
 async def looking_dislike(message: Message):
     _user_id = message.from_user.id
     _prev_message = MessageBox.get(_user_id)
-    await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
+    if _prev_message:
+        await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
 
     person = Feed(_user_id).next
     await send_quest_if_person(_user_id, person)
@@ -84,7 +86,8 @@ async def looking_dislike(message: Message):
 async def looking_love_letter(message: Message):
     _user_id = message.from_user.id
     _prev_message = MessageBox.get(_user_id)
-    await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
+    if _prev_message:
+        await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
     await message.answer(text='Напиши что-то для этого пользователя:')
     await FState.messaging.set()
 
@@ -95,7 +98,10 @@ async def messaging(message: Message):
     _message = message.text
     _prev_message = MessageBox.get(_user_id)
     if _prev_message:
-        await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
+        try:
+            await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
+        except MessageNotModified:
+            loguru.logger.warning('Message is not modified')
     await message.answer(text='Пользователь получит твое сообщение!')
     await send_like(_user_id, _message)
 
@@ -108,7 +114,8 @@ async def messaging(message: Message):
 async def go_sleep(message: Message):
     _user_id = message.from_user.id
     _prev_message = MessageBox.get(_user_id)
-    await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
+    if _prev_message:
+        await _prev_message.edit_reply_markup(InlineKeyboardMarkup())
     await message.answer(text='Подождем, пока кто-то увидит твою анкету',
                          reply_markup=sleeping_keyboard
                          )
