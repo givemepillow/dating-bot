@@ -9,7 +9,7 @@ from core.markups.text import *
 from core.services import MessageBox
 from core.states import QState, FState
 from core.tools import age_suffix, Filter
-from loader import dp, bot
+from loader import dp, bot, repository
 from .templates import send_quest_if_person
 
 
@@ -25,9 +25,14 @@ async def cancel(message: Message):
 @dp.message_handler(text=['Назад'], state=QState.input_name)
 @dp.message_handler(commands=['start'], state='*')
 async def welcome(message: Message):
-    text = "Добро пожаловать! Ну что, начнём?"
-    await QState.start.set()
-    await message.answer(text=text, reply_markup=welcome_keyboard)
+    person = repository.get_person(message.from_user.id)
+    if not person:
+        text = "Добро пожаловать! Ну что, начнём?"
+        await QState.start.set()
+        await message.answer(text=text, reply_markup=welcome_keyboard)
+    else:
+        await message.answer(text='Привет! Выбери действие:', reply_markup=sleeping_keyboard)
+        await FState.sleeping.set()
 
 
 @dp.message_handler(text=['Нет'], state=QState.start)
