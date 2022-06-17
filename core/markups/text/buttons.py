@@ -13,3 +13,7 @@ dislike_button = KeyboardButton(emojize(':thumbsdown:'))
 sleep_button = KeyboardButton(emojize(':zzz:'))
 
 no_look_button = KeyboardButton('Нет, приступить к поиску')
+
+look_button = KeyboardButton('Смотреть анкеты')
+me_button = KeyboardButton('Моя анкета')
+leave_button = KeyboardButton('Я больше не хочу никого искать')
