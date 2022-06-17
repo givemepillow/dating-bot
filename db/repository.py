@@ -82,6 +82,7 @@ class Repository(Singleton):
     def get_feed(self, person: Person, after_date: dt = dt(datetime.MINYEAR, 1, 1)) -> list[int]:
         stmt = select(Person.user_id).where(
             and_(
+                Person.enabled,
                 Person.settlement_id == person.settlement_id,
                 Person.user_id != person.user_id,
                 Person.registration_date > after_date
