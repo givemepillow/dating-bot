@@ -29,6 +29,8 @@ args = parser.parse_args()
 
 db_engine = create_database_engine(
     database_engine='postgres',
+    username=config.database.postgres.user,
+    password=config.database.postgres.password,
     drop=False,
     create=True,
     echo=False,
