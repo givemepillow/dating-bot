@@ -13,7 +13,7 @@ async def disable(message: Message):
                          reply_markup=disabled_keyboard
                          )
     repository.disable_person(message.from_user.id)
-    QState.zero.set()
+    await QState.zero.set()
 
 
 @dp.message_handler(text='Вернуться к поиску', state=QState.zero)
@@ -21,6 +21,6 @@ async def enable(message: Message):
     _user_id = message.from_user.id
     await message.answer(text='Приступаем к поиску анкет!', reply_markup=rate_keyboard)
     repository.enable_person(_user_id)
-    FState.looking.set()
+    await FState.looking.set()
     person = Feed(_user_id).next
     await send_quest_if_person(_user_id, person)
