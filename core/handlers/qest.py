@@ -2,7 +2,6 @@ from datetime import date
 
 from aiogram import types
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
-from aiogram.utils.emoji import emojize
 
 from core import Questionnaire, Feed
 from core.markups.inline import *
@@ -39,6 +38,7 @@ async def start(message: Message):
 
 @dp.message_handler(text=['Назад'], state=QState.select_gender)
 @dp.message_handler(text=['Начнём', 'Да'], state=[QState.start, QState.complete])
+@dp.message_handler(text=['Создать анкету заново'], state=QState.zero)
 async def start(message: Message):
     await message.answer("Давай знакомиться, как тебя зовут: ", reply_markup=back_keyboard)
     await QState.input_name.set()  # Update state.
@@ -287,7 +287,3 @@ async def complete(message: Message):
     await FState.looking.set()
     person = Feed(_user_id).next
     await send_quest_if_person(_user_id, person)
-    # if person:
-    #     await send_quest(_user_id, person)
-    # else:
-    #     await bot.send_message(text='Подходящих анкет больше нет...', chat_id=_user_id)
