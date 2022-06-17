@@ -20,3 +20,5 @@ class QState(StatesGroup):
 class FState(StatesGroup):
     looking = State()
     reporting = State()
+    messaging = State()
+    sleeping = State()
