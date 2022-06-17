@@ -7,8 +7,8 @@ class LikeAnswerSelector:
     @staticmethod
     def markup():
         return InlineKeyboardMarkup(row_width=2).add(
-            InlineKeyboardButton(text=emojize(':heart:'),
+            InlineKeyboardButton(text=emojize('Взаимно:heart:'),
                                  callback_data='like'),
-            InlineKeyboardButton(text=emojize(':thumbsdown:'),
+            InlineKeyboardButton(text=emojize('Не нравится:thumbsdown:'),
                                  callback_data='dislike')
         )
