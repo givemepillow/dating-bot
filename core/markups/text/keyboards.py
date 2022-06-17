@@ -1,20 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup
 
-from .buttons import (
-    back_button,
-    no_button,
-    go_button,
-    yes_button,
-    cancel_button,
-    like_button,
-    write_button,
-    dislike_button,
-    sleep_button,
-    no_look_button,
-    look_button,
-    me_button,
-    leave_button
-)
+from .buttons import *
 
 back_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
@@ -59,3 +45,8 @@ sleeping_keyboard = ReplyKeyboardMarkup(
     resize_keyboard=True,
     row_width=3
 ).add(look_button, me_button, leave_button)
+
+disabled_keyboard = ReplyKeyboardMarkup(
+    resize_keyboard=True,
+    row_width=2
+).add(return_to_looking_button, recreate_quest_button)
