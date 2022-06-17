@@ -1,12 +1,12 @@
-from datetime import datetime as dt
 import datetime
+from datetime import datetime as dt
 
 from sqlalchemy import desc, select, update
 from sqlalchemy.sql.elements import or_, and_
 from sqlalchemy.sql.operators import ilike_op
 
-from utils import Singleton
 from db.model import Person, Settlement
+from utils import Singleton
 
 
 class Repository(Singleton):
@@ -44,6 +44,24 @@ class Repository(Singleton):
             results = s.execute(select(Person).where(Person.user_id == user_id))
             result = results.one_or_none()
             return result[0] if result else result
+
+    def disable_person(self, user_id):
+        with self._session() as s:
+            s.execute(
+                update(Person).
+                where(Person.user_id == user_id).
+                values(enabled=False)
+            )
+            s.commit()
+
+    def enable_person(self, user_id):
+        with self._session() as s:
+            s.execute(
+                update(Person).
+                where(Person.user_id == user_id).
+                values(enabled=True)
+            )
+            s.commit()
 
     def get_settlement(self, settlement_id):
         with self._session() as s:
