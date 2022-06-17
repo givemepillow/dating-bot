@@ -30,8 +30,8 @@ class Person(Base):
     user_id = Column('user_id', Integer, primary_key=True)
     name = Column('name', String(25), nullable=False)
     username = Column('username', String(40), nullable=False)
-    photo = Column('photo', String(100), server_default='AgACAgIAAxkBAAIFd2KqK'
-                                                        '-I6czHVTqQQVFB_7MqtseG2AALMvjEb365QSa9xf8wuIY0GAQADAgADeQADJAQ',
+    photo = Column('photo', String(100), server_default='AgACAgIAAxkBAAILqGKs0lXhLd1UE1tskd'
+                                                        '-vvajsvwABMgAClsAxG6TsaEmPiQ7mO6qN0gEAAwIAA3gAAyQE',
                    nullable=False)
     registration_date = Column('registration_date', DateTime, server_default=func.now())
     height = Column('height', Integer, nullable=True)
