@@ -1,6 +1,5 @@
 from aiogram.types import CallbackQuery, Message
 from aiogram.types import InlineKeyboardMarkup
-from aiogram.utils.emoji import emojize
 
 from core import Feed
 from core.markups.text import *
@@ -26,10 +25,16 @@ async def options(callback_query: CallbackQuery):
                                    chat_id=_user_id)
 
     if callback_query.data == 'like':
-        like_person = repository.get_person(Feed(callback_query.from_user.id).get_like())
-        await bot.send_message(chat_id=callback_query.from_user.id,
-                               text=f'Можешь начинать общаться: @{like_person.username}\nНе забудь оценить предыдущую '
-                                    f'анкету!')
+        like_user_id = Feed(callback_query.from_user.id).get_like()
+        if like_user_id:
+            like_person = repository.get_person(like_user_id)
+            await bot.send_message(chat_id=callback_query.from_user.id,
+                                   text=f'Можешь начинать общаться: @{like_person.username}\nНе забудь оценить '
+                                        f'предыдущую анкету!')
+        else:
+            _user_id = callback_query.from_user.id
+            person = repository.get_person(_user_id)
+            await send_quest_if_person(_user_id, person)
     if callback_query.data == 'dislike':
         await bot.send_message(
             chat_id=callback_query.from_user.id,
