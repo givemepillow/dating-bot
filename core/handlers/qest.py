@@ -4,13 +4,14 @@ from aiogram import types
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 from aiogram.utils.emoji import emojize
 
-from core import Questionnaire
-from loader import dp, bot
+from core import Questionnaire, Feed
 from core.markups.inline import *
 from core.markups.text import *
+from core.services import MessageBox
 from core.states import QState, FState
 from core.tools import age_suffix, Filter
-from core.services import MessageBox
+from loader import dp, bot
+from .templates import send_quest_if_person
 
 
 @dp.message_handler(commands=['cancel'], state=QState.states)
@@ -56,6 +57,7 @@ async def name(message: Message):
         _user_id = message.from_user.id
         Questionnaire.write(user_id=_user_id, name=_name)
         Questionnaire.write(user_id=_user_id, enabled=True)
+        Questionnaire.write(user_id=_user_id, username=message.from_user.username)
         _message = await message.answer(
             f"Приятно познакомиться, {_name}! Выбери свой пол:",
             reply_markup=GenderSelector.markup()
@@ -277,8 +279,15 @@ async def bio(message: Message):
 
 
 @dp.message_handler(text=['Нет, приступить к поиску', 'Нет'], state=QState.complete)
+@dp.message_handler(text=['Смотреть анкеты'], state=FState.sleeping)
+@dp.message_handler()
 async def complete(message: Message):
+    _user_id = message.from_user.id
+    await message.answer(text='Приступаем к поиску анкет!', reply_markup=rate_keyboard)
     await FState.looking.set()
-    await message.answer(text='Приступаем к поиску анкет...', reply_markup=rate_keyboard)
-    await message.answer(text='Анкета',
-                         reply_markup=QuestionnaireOptionsSelector.markup())
+    person = Feed(_user_id).next
+    await send_quest_if_person(_user_id, person)
+    # if person:
+    #     await send_quest(_user_id, person)
+    # else:
+    #     await bot.send_message(text='Подходящих анкет больше нет...', chat_id=_user_id)
