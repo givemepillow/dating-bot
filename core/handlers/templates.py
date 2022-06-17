@@ -2,10 +2,11 @@ from core import Feed
 from core.markups.inline import QuestionnaireOptionsSelector, LikeAnswerSelector
 from core.services import MessageBox
 from core.tools import age_suffix
+from db.model import Person
 from loader import bot, repository
 
 
-async def send_quest(user_id: int, person, action=None, me=False):
+async def send_quest(user_id: int, person: Person, action=None, me=False):
     _age, _suffix = age_suffix(person.date_of_birth)
     _message = await bot.send_photo(
         photo=person.photo, chat_id=user_id,
@@ -32,7 +33,7 @@ async def send_like(from_user_id: int, message: str | None = None):
         await bot.send_message(text=f"Сообщение от {from_person.name}:\n{message}", chat_id=to_user_id)
 
 
-async def send_quest_if_person(user_id: int, person):
+async def send_quest_if_person(user_id: int, person: Person):
     if person:
         await send_quest(user_id, person)
     else:
