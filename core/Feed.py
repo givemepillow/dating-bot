@@ -42,8 +42,11 @@ class _Feed:
         shuffle(new_users)
         return new_users
 
-    def get_like(self) -> int:
-        return self._user_likes.pop()
+    def get_like(self) -> int | None:
+        if self._user_likes:
+            return self._user_likes.pop()
+        else:
+            return None
 
     def set_like(self, user_id: int):
         self._user_likes.append(user_id)
