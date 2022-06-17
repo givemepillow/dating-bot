@@ -4,3 +4,4 @@ from .GenderSelector import GenderSelector
 from .LookingForSelector import LookingForSelector
 from .HeightSelector import HeightSelector
 from .QuestionnaireOptionsSelector import QuestionnaireOptionsSelector
+from .LikeAnswerSelector import LikeAnswerSelector
