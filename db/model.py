@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from sqlalchemy import Column, String, Integer, Boolean, ForeignKey, DateTime, Date, Index, func
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -31,8 +29,11 @@ class Person(Base):
     __tablename__ = "persons"
     user_id = Column('user_id', Integer, primary_key=True)
     name = Column('name', String(25), nullable=False)
-    photo = Column('photo', String(100), nullable=False)
-    registration_date = Column('registration_date', DateTime, default=datetime.now)
+    username = Column('username', String(40), nullable=False)
+    photo = Column('photo', String(100), server_default='AgACAgIAAxkBAAIFd2KqK'
+                                                        '-I6czHVTqQQVFB_7MqtseG2AALMvjEb365QSa9xf8wuIY0GAQADAgADeQADJAQ',
+                   nullable=False)
+    registration_date = Column('registration_date', DateTime, server_default=func.now())
     height = Column('height', Integer, nullable=True)
     enabled = Column('enabled', Boolean, nullable=False, default=True)
     bio = Column('bio', String(300), nullable=True)
