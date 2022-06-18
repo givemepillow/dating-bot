@@ -57,6 +57,7 @@ class _Feed:
 
     @property
     def prev_id(self) -> int | None:
+        self._current_user_id = self._prev_user_id
         return self._prev_user_id
 
     @property
